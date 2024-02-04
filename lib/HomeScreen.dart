@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:restapi/AddScreen.dart';
 import 'package:restapi/Edit_Screen.dart';
 import 'package:restapi/ModelClass.dart';
+import 'package:restapi/Stayleall.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,150 +20,132 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Crud App"),
+        title: const Text("My Product"),
       ),
-      body: ProductList.isEmpty
-          ? Center(
-        child: CircularProgressIndicator(),
-      )
-          : RefreshIndicator(
-        child: ListView.builder(
-          shrinkWrap: true,
+      body: ProductList.isEmpty ? const Center(child: CircularProgressIndicator(),):
+      RefreshIndicator(onRefresh: GetJsonFormApi, child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+        child: GridView.builder(
+
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, mainAxisExtent: 240),
           itemCount: ProductList.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-                title: Text(ProductList[index].productName ?? "Unknown"),
-                subtitle: Wrap(
-                  children: [
-                    Text(ProductList[index].totalPrice ?? ""),
-                    SizedBox(width: 8),
-                    Text(ProductList[index].productCode ?? "Unknown"),
-                    SizedBox(width: 8),
-                    SizedBox(width: 8),
-                    Text(ProductList[index].qty ?? "Unknown"),
-                    SizedBox(width: 8),
-                    Text(ProductList[index].unitPrice ?? "Unknown"),
-                  ],
-                ),
-                leading: CircleAvatar(
-                  backgroundImage:
-                  NetworkImage(ProductList[index].img ?? ""),
-                ),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (value) {
-                    if (value == "Edit") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditProduct(),
-                        ),
-                      );
-                    } else {
-                      MyDialogBOx();
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: "Edit",
-                      child: Row(
-                        children: [
-                          Icon(Icons.edit),
-                          SizedBox(width: 8),
-                          Text('Edit'),
-                        ],
-                      ),
+          itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: ColorWhite,
+                  borderRadius: BorderRadius.circular(6),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black54.withOpacity(0.2), blurRadius: 10)
+                  ]),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: Image.network(
+                      ProductList[index].Img ?? "No image",
+                      fit: BoxFit.fill,
                     ),
-                    const PopupMenuItem(
-                      value: "Delete",
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete),
-                          SizedBox(width: 5),
-                          Text("Delete"),
-                        ],
-                      ),
+                  ),
+                  SizedBox(height: 5),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 8,
                     ),
-                  ],
-                ));
-          },
-        ),
-        onRefresh: () => GetJsonFormApi(),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        icon: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddProduct(),
+                    child: Container(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Product Name : ${ProductList[index].productName ?? "Unknown"}"),
+                            const SizedBox(height: 1),
+                            Text("Product Code : ${ProductList[index].productCode ?? "Unknown"}"),
+                            const SizedBox(height: 1),
+
+                            Text("Quantity : ${ProductList[index].qty ?? "Unknown"}"),
+                            const SizedBox(
+                              height: 1,
+                            ),
+                            Text("Unit price : ${ProductList[index].unitPrice ?? "Unknown"}"),
+                          ]),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EditScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text("Edit"),
+                      ),
+                      ElevatedButton(
+                        onPressed: MyDialogBOx,
+                        child: const Text("Delete"),
+                        style:
+                        ElevatedButton.styleFrom(backgroundColor: ColorRed),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
-          );
-        },
-        label: const Text("Add"),
-      ),
+          ),
+        ),
+      )),
+      floatingActionButton: MyFabBatton(context),
     );
   }
-
-  @override
-  void initState() {
-    GetJsonFormApi();
-    super.initState();
-    setState(() {});
-  }
-
   void MyDialogBOx() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Are you Sure?"),
-        content: const Text("Do you want to delete"),
+        title: const Text("Delete!",style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold,color: ColorRed),),
+        content: const Text("Are you sure delete this?"),
         actions: [
-          TextButton(
+          OutlinedButton(
             onPressed: () {
               Navigator.pop(context);
             },
             child: const Text("Cancel"),
           ),
-          TextButton(
+          OutlinedButton(
             onPressed: () {
               Navigator.pop(context);
             },
             child: const Text(
               "Delete",
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: ColorRed),
             ),
           ),
         ],
       ),
     );
   }
-
+  @override
+  void initState() {
+    GetJsonFormApi();
+    super.initState();
+    setState(() {});
+  }
   Future<void> GetJsonFormApi() async {
     ProductList.clear();
-//Convert Url to Uri
-    Uri MyUri = Uri.parse(
-        "https://crud.teamrabbil.com/api/v1/ReadProduct");
-
-    //Call Api
+    Uri MyUri = Uri.parse("https://crud.teamrabbil.com/api/v1/ReadProduct");
     Response response = await get(MyUri);
-    print(response);
-    print(response.body);
-    print(response.statusCode);
-
-    //Show Response
-    if (response.statusCode == 200) {
-      var DecodeResponse = jsonDecode(response.body);
-      if (DecodeResponse["status"] == "success") {
-        var list = DecodeResponse["data"];
-        for (var apiItems in list) {
-          setState(() {
-            Productkey MyApiList = Productkey.fromJson(apiItems);
-            ProductList.add(MyApiList);
-          });
-        }
+    var ResponseDecode = jsonDecode(response.body);
+    if (response.statusCode == 200 && ResponseDecode["status"] == "success") {
+      var jsonlist = ResponseDecode["data"];
+      for (var items in jsonlist) {
+        Productkey MyApikey = Productkey.fromJson(items);
+        ProductList.add(MyApikey);
+        setState(() {
+        });
       }
     }
   }

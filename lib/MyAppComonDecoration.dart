@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restapi/HomeScreen.dart';
+import 'package:restapi/Stayleall.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -8,35 +9,42 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: const HomeScreen(),
       theme: ThemeData(
-        iconTheme: const IconThemeData(color: Colors.white),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.green,
+          backgroundColor: ColorDarkBlue,
           centerTitle: true,
           titleTextStyle: TextStyle(
-              fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Colors.green,
+              fontSize: 32, fontWeight: FontWeight.bold, color: ColorWhite),
         ),
         inputDecorationTheme: const InputDecorationTheme(
-          errorBorder:
-          OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
-          focusedBorder:
-          OutlineInputBorder(borderSide: BorderSide(color: Colors.indigo)),
-          disabledBorder:
-          OutlineInputBorder(borderSide: BorderSide(color: Colors.teal)),
-          enabledBorder:
-          OutlineInputBorder(borderSide: BorderSide(color: Colors.teal)),
-          border:
-          OutlineInputBorder(borderSide: BorderSide(color: Colors.teal)),
-          fillColor: Colors.white,
+          fillColor: ColorWhite,
+          filled: true,
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: ColorGreen),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: ColorWhite),
+          ),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: ColorGreen),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: ColorRed),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: ColorWhite),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: ColorGreen,
+            ),
+          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-            textStyle: const TextStyle(fontSize: 25),
+            backgroundColor: ColorGreen,
+            textStyle: const TextStyle(fontSize: 16, color: ColorWhite),
           ),
         ),
       ),

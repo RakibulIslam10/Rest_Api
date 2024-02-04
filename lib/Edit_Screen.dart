@@ -1,106 +1,117 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class EditProduct extends StatefulWidget {
-  const EditProduct({super.key});
+import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:restapi/Stayleall.dart';
+
+class EditScreen extends StatefulWidget {
+  const EditScreen({super.key});
 
   @override
-  State<EditProduct> createState() => _EditProductState();
+  State<EditScreen> createState() => _EditScreenState();
 }
+
+final TextEditingController NameController = TextEditingController();
+final TextEditingController CodeController = TextEditingController();
+final TextEditingController ImageController = TextEditingController();
+final TextEditingController PriceController = TextEditingController();
+final TextEditingController QuantityController = TextEditingController();
+final TextEditingController TotalController = TextEditingController();
 
 final _FormKey = GlobalKey<FormState>();
 
-class _EditProductState extends State<EditProduct> {
+class _EditScreenState extends State<EditScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
+    return Scaffold(resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
-        title: const Text("Edit Product"),
+        title: const Text("Update Product"),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        padding: const EdgeInsets.all(18.0),
         child: Form(
           key: _FormKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 30),
+              const SizedBox(height: 16),
               TextFormField(
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Please enter product Name";
+                    return "Enter product name";
                   }
                   return null;
                 },
-                decoration: const InputDecoration(hintText: "Product Name"),
+                controller: NameController,
+                decoration: MyDecoration("Product Name"),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               TextFormField(
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Please enter product Price";
+                    return "Enter product code";
                   }
                   return null;
                 },
-                decoration: const InputDecoration(hintText: "Product Price"),
+                controller: CodeController,
+                decoration: MyDecoration("Product Code"),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               TextFormField(
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Please enter product Code";
+                    return "Enter product url";
                   }
                   return null;
                 },
-                decoration: const InputDecoration(hintText: "Product Code"),
+                controller: ImageController,
+                decoration: MyDecoration("Image Url"),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               TextFormField(
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Please enter product Quantity";
+                    return "Enter product quantity";
                   }
                   return null;
                 },
-                decoration: const InputDecoration(hintText: "Quantity"),
+                controller: QuantityController,
+                decoration: MyDecoration("Quantity"),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               TextFormField(
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Please enter Total price";
+                    return "Enter product Total Price";
                   }
                   return null;
                 },
-                decoration: const InputDecoration(hintText: "Total Price"),
+                controller: TotalController,
+                decoration: MyDecoration("Total Price"),
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please Import product Image";
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(hintText: "Product Image"),
-              ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               SizedBox(
-                height: 50,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_FormKey.currentState!.validate()) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text("Update"),
-                ),
-              )
+                  height: 50,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorDarkBlue),
+                      onPressed: () {
+                        if (_FormKey.currentState!.validate()) {
+                          Navigator.pop(context);
+
+                        }
+                      },
+                      child: const Text(
+                        "Update",
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      )))
             ],
           ),
         ),
       ),
     );
   }
+
 }

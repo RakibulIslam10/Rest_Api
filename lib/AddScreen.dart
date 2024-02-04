@@ -1,106 +1,166 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class AddProduct extends StatefulWidget {
-  const AddProduct({super.key});
+import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:restapi/Stayleall.dart';
+
+class AddProductScreen extends StatefulWidget {
+  const AddProductScreen({super.key});
 
   @override
-  State<AddProduct> createState() => _AddProductState();
+  State<AddProductScreen> createState() => _AddProductScreenState();
 }
+
+final TextEditingController NameController = TextEditingController();
+final TextEditingController CodeController = TextEditingController();
+final TextEditingController ImageController = TextEditingController();
+final TextEditingController PriceController = TextEditingController();
+final TextEditingController QuantityController = TextEditingController();
+final TextEditingController TotalController = TextEditingController();
 
 final _FormKey = GlobalKey<FormState>();
 
-class _AddProductState extends State<AddProduct> {
+class _AddProductScreenState extends State<AddProductScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
+    return Scaffold(resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
-        title: const Text("Add Product"),
+        title: const Text("Create Product"),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        padding: const EdgeInsets.all(18.0),
         child: Form(
           key: _FormKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 30),
+              const SizedBox(height: 16),
               TextFormField(
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Please enter product Name";
+                    return "Enter product name";
                   }
                   return null;
                 },
-                decoration: const InputDecoration(hintText: "Product Name"),
+                controller: NameController,
+                decoration: MyDecoration("Product Name"),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               TextFormField(
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Please enter product Price";
+                    return "Enter product code";
                   }
                   return null;
                 },
-                decoration: const InputDecoration(hintText: "Product Price"),
+                controller: CodeController,
+                decoration: MyDecoration("Product Code"),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               TextFormField(
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Please enter product Code";
+                    return "Enter product url";
                   }
                   return null;
                 },
-                decoration: const InputDecoration(hintText: "Product Code"),
+                controller: ImageController,
+                decoration: MyDecoration("Image Url"),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               TextFormField(
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Please enter product Quantity";
+                    return "Enter product quantity";
                   }
                   return null;
                 },
-                decoration: const InputDecoration(hintText: "Quantity"),
+                controller: QuantityController,
+                decoration: MyDecoration("Quantity"),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               TextFormField(
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Please enter Total price";
+                    return "Enter product Total Price";
                   }
                   return null;
                 },
-                decoration: const InputDecoration(hintText: "Total Price"),
+                controller: TotalController,
+                decoration: MyDecoration("Total Price"),
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please Import product Image";
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(hintText: "Product Image"),
-              ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               SizedBox(
-                height: 50,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_FormKey.currentState!.validate()) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text("Add Product"),
-                ),
-              )
+                  height: 50,
+                  width: double.infinity,
+                  child: Visibility(replacement: CircularProgressIndicator(),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: ColorDarkBlue),
+                        onPressed: () {
+                          if (_FormKey.currentState!.validate()) {
+                            PostFormApi();
+                            setState(() {
+                              Loding = true;
+                            });
+                          }
+                        },
+                        child: Loding ? CircularProgressIndicator() : const Text(
+                          "Create",
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        )),
+                  ))
             ],
           ),
         ),
       ),
     );
+  }
+  var Loding = false;
+
+  Future<void>PostFormApi()async {
+    setState(() {
+      Loding = true;
+    });
+    Uri uri = Uri.parse("https://crud.teamrabbil.com/api/v1/CreateProduct");
+
+    Map<String,dynamic>apiParams = {
+      "Img":ImageController.text.trim(),
+      "ProductCode":CodeController.text.trim(),
+      "ProductName":NameController.text.trim(),
+      "Qty":QuantityController.text.trim(),
+      "TotalPrice":TotalController.text.trim(),
+    };
+
+    Response response = await post(uri,body: jsonEncode(apiParams),
+        headers: {"Content-type": " application/json"}
+    );
+    print(response.statusCode);
+    print(response.body);
+    if(response.statusCode == 200){
+      ImageController.clear();
+      NameController.clear();
+      CodeController.clear();
+      QuantityController.clear();
+      TotalController.clear();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Product created successfully",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: ColorGreen,
+        ),
+      );
+      setState(() {
+        Loding = false;
+      });
+
+    }
   }
 }
